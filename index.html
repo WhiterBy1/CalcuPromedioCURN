@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Notas y PPS</title>
+    <title>CalcuPromedioCURN</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,6 +68,12 @@
             text-align: center;
             margin-top: 20px;
         }
+        #visitorCount {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
         @media (max-width: 600px) {
             input, button {
                 width: 100%;
@@ -77,7 +83,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Calculadora de Notas y PPS</h1>
+        <h1>CalcuPromedioCURN</h1>
         <form id="gradeForm">
             <label for="subject">Asignatura:</label>
             <input type="text" id="subject" required>
@@ -119,6 +125,7 @@
         </table>
 
         <div id="pps"></div>
+        <div id="visitorCount">Cargando contador de visitas...</div>
     </div>
 
     <script>
@@ -202,6 +209,25 @@
             const pps = totalCredits > 0 ? weightedSum / totalCredits : 0;
             document.getElementById('pps').textContent = `Promedio Ponderado Semestral (PPS): ${pps.toFixed(2)}`;
         }
+
+        // Función para obtener y mostrar el contador de visitas
+        function updateVisitorCount() {
+            const countUrl = 'https://api.countapi.xyz/hit/calcupromediocurn/visits';
+            fetch(countUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const visitorCountElement = document.getElementById('visitorCount');
+                    visitorCountElement.textContent = `Número de visitas: ${data.value}`;
+                })
+                .catch(error => {
+                    console.error('Error al obtener el contador de visitas:', error);
+                    const visitorCountElement = document.getElementById('visitorCount');
+                    visitorCountElement.textContent = 'No se pudo cargar el contador de visitas';
+                });
+        }
+
+        // Llamar a la función para actualizar el contador de visitas
+        updateVisitorCount();
 
         document.getElementById('gradeForm').addEventListener('submit', addSubject);
         loadSubjects();
