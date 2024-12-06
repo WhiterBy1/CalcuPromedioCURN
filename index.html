@@ -212,7 +212,7 @@
 
         // Función para obtener y mostrar el contador de visitas
         function updateVisitorCount() {
-            const countUrl = 'https://api.countapi.xyz/hit/calcupromediocurn/visits';
+            const countUrl = 'https://api.countapi.xyz/hit/calcupromediocurn/visits';//llamada a la api
             fetch(countUrl)
                 .then(response => response.json())
                 .then(data => {
