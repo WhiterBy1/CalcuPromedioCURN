@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Notas y PPS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #pps {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+        }
+        @media (max-width: 600px) {
+            input, button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Notas y PPS</h1>
+        <form id="gradeForm">
+            <label for="subject">Asignatura:</label>
+            <input type="text" id="subject" required>
+            
+            <label for="credits">Créditos:</label>
+            <input type="number" id="credits" required min="1">
+            
+            <label for="oep">OEP:</label>
+            <input type="number" id="oep" required min="0" max="5" step="0.1">
+            
+            <label for="eep">EEP:</label>
+            <input type="number" id="eep" required min="0" max="5" step="0.1">
+            
+            <label for="oes">OES:</label>
+            <input type="number" id="oes" required min="0" max="5" step="0.1">
+            
+            <label for="ees">EES:</label>
+            <input type="number" id="ees" required min="0" max="5" step="0.1">
+            
+            <label for="oef">OEF:</label>
+            <input type="number" id="oef" required min="0" max="5" step="0.1">
+            
+            <label for="eef">EEF:</label>
+            <input type="number" id="eef" required min="0" max="5" step="0.1">
+            
+            <button type="submit">Agregar Asignatura</button>
+        </form>
+
+        <table id="gradeTable">
+            <thead>
+                <tr>
+                    <th>Asignatura</th>
+                    <th>Créditos</th>
+                    <th>Nota Final</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div id="pps"></div>
+    </div>
+
+    <script>
+        let subjects = [];
+
+        function loadSubjects() {
+            const savedSubjects = localStorage.getItem('subjects');
+            if (savedSubjects) {
+                subjects = JSON.parse(savedSubjects);
+                updateTable();
+                calculatePPS();
+            }
+        }
+
+        function saveSubjects() {
+            localStorage.setItem('subjects', JSON.stringify(subjects));
+        }
+
+        function calculateFinalGrade(grades) {
+            const weights = {
+                oep: 0.135,
+                eep: 0.165,
+                oes: 0.135,
+                ees: 0.165,
+                oef: 0.14,
+                eef: 0.26
+            };
+
+            return Object.keys(weights).reduce((sum, key) => {
+                return sum + grades[key] * weights[key];
+            }, 0);
+        }
+
+        function addSubject(event) {
+            event.preventDefault();
+            const subject = document.getElementById('subject').value;
+            const credits = parseFloat(document.getElementById('credits').value);
+            const grades = {
+                oep: parseFloat(document.getElementById('oep').value),
+                eep: parseFloat(document.getElementById('eep').value),
+                oes: parseFloat(document.getElementById('oes').value),
+                ees: parseFloat(document.getElementById('ees').value),
+                oef: parseFloat(document.getElementById('oef').value),
+                eef: parseFloat(document.getElementById('eef').value)
+            };
+
+            const finalGrade = calculateFinalGrade(grades);
+
+            subjects.push({ subject, credits, finalGrade });
+            updateTable();
+            calculatePPS();
+            saveSubjects();
+            event.target.reset();
+        }
+
+        function updateTable() {
+            const tbody = document.querySelector('#gradeTable tbody');
+            tbody.innerHTML = '';
+            subjects.forEach((subject, index) => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = subject.subject;
+                row.insertCell(1).textContent = subject.credits;
+                row.insertCell(2).textContent = subject.finalGrade.toFixed(2);
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Eliminar';
+                deleteButton.onclick = () => removeSubject(index);
+                row.insertCell(3).appendChild(deleteButton);
+            });
+        }
+
+        function removeSubject(index) {
+            subjects.splice(index, 1);
+            updateTable();
+            calculatePPS();
+            saveSubjects();
+        }
+
+        function calculatePPS() {
+            const totalCredits = subjects.reduce((sum, subject) => sum + subject.credits, 0);
+            const weightedSum = subjects.reduce((sum, subject) => sum + subject.finalGrade * subject.credits, 0);
+            const pps = totalCredits > 0 ? weightedSum / totalCredits : 0;
+            document.getElementById('pps').textContent = `Promedio Ponderado Semestral (PPS): ${pps.toFixed(2)}`;
+        }
+
+        document.getElementById('gradeForm').addEventListener('submit', addSubject);
+        loadSubjects();
+    </script>
+</body>
+</html>
