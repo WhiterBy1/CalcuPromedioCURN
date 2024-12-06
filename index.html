@@ -74,6 +74,17 @@
             font-size: 14px;
             color: #666;
         }
+        #adminPanel {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none;
+        }
+        #loginForm {
+            margin-top: 20px;
+            text-align: center;
+        }
         @media (max-width: 600px) {
             input, button {
                 width: 100%;
@@ -125,10 +136,24 @@
         </table>
 
         <div id="pps"></div>
-        <div id="visitorCount">Cargando contador de visitas...</div>
+        <div id="loginForm">
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Contraseña">
+            <button id="loginBtn">Iniciar sesión</button>
+        </div>
+        <div id="adminPanel">
+            <h2>Panel de Administración</h2>
+            <p>Número de visitas: <span id="visitorCount">Cargando...</span></p>
+            <button id="resetCounterBtn">Reiniciar Contador</button>
+            <button id="logoutBtn">Cerrar sesión</button>
+        </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { auth, database } from './firebase-config.js';
+        import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+        import { ref, onValue, set } from 'firebase/database';
+
         let subjects = [];
 
         function loadSubjects() {
@@ -210,27 +235,68 @@
             document.getElementById('pps').textContent = `Promedio Ponderado Semestral (PPS): ${pps.toFixed(2)}`;
         }
 
-        // Función para obtener y mostrar el contador de visitas
-        function updateVisitorCount() {
-            const countUrl = 'https://api.countapi.xyz/hit/calcupromediocurn/visits';//llamada a la api
-            fetch(countUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const visitorCountElement = document.getElementById('visitorCount');
-                    visitorCountElement.textContent = `Número de visitas: ${data.value}`;
+        // Funciones de autenticación
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('adminPanel').style.display = 'block';
+                    updateVisitorCount();
                 })
-                .catch(error => {
-                    console.error('Error al obtener el contador de visitas:', error);
-                    const visitorCountElement = document.getElementById('visitorCount');
-                    visitorCountElement.textContent = 'No se pudo cargar el contador de visitas';
+                .catch((error) => {
+                    alert('Error de autenticación: ' + error.message);
                 });
         }
 
-        // Llamar a la función para actualizar el contador de visitas
-        updateVisitorCount();
+        function logout() {
+            signOut(auth).then(() => {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('adminPanel').style.display = 'none';
+            }).catch((error) => {
+                console.error('Error al cerrar sesión:', error);
+            });
+        }
+
+        // Función para obtener y mostrar el contador de visitas
+        function updateVisitorCount() {
+            const visitorCountRef = ref(database, 'visitorCount');
+            onValue(visitorCountRef, (snapshot) => {
+                const count = snapshot.val() || 0;
+                document.getElementById('visitorCount').textContent = count;
+            });
+        }
+
+        // Función para incrementar el contador de visitas
+        function incrementVisitorCount() {
+            const visitorCountRef = ref(database, 'visitorCount');
+            onValue(visitorCountRef, (snapshot) => {
+                const currentCount = snapshot.val() || 0;
+                set(visitorCountRef, currentCount + 1);
+            }, { onlyOnce: true });
+        }
+
+        // Función para reiniciar el contador
+        function resetCounter() {
+            const visitorCountRef = ref(database, 'visitorCount');
+            set(visitorCountRef, 0);
+        }
+
+        // Event listeners
+        document.getElementById('loginBtn').addEventListener('click', login);
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('resetCounterBtn').addEventListener('click', resetCounter);
+
+        // Incrementar el contador de visitas al cargar la página
+        incrementVisitorCount();
 
         document.getElementById('gradeForm').addEventListener('submit', addSubject);
         loadSubjects();
     </script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js"></script>
 </body>
 </html>
+
