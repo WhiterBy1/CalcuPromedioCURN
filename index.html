@@ -79,14 +79,9 @@
                 width: 100%;
             }
         }
-        /* Estilos para el botón de admin */
-        #adminButton {
-            display: none; /* Por defecto está oculto */
-        }
     </style>
 </head>
 <body>
-    <div id="sfcxr7y5eqwmnwzasme6st9ghe96z4wbr3t"></div><script type="text/javascript" src="https://counter6.optistats.ovh/private/counter.js?c=xr7y5eqwmnwzasme6st9ghe96z4wbr3t&down=async" async></script><noscript><a href="https://www.contadorvisitasgratis.com" title="contador visitas blogger"><img src="https://counter6.optistats.ovh/private/contadorvisitasgratis.php?c=xr7y5eqwmnwzasme6st9ghe96z4wbr3t" border="0" title="contador visitas blogger" alt="contador visitas blogger"></a></noscript>
     <div class="container">
         <h1>CalcuPromedioCURN</h1>
         <form id="gradeForm">
@@ -214,21 +209,22 @@
             const pps = totalCredits > 0 ? weightedSum / totalCredits : 0;
             document.getElementById('pps').textContent = `Promedio Ponderado Semestral (PPS): ${pps.toFixed(2)}`;
         }
-        // Contador de visitas usando la API de CountAPI
-        function getVisitCount() {
-            const key = 'miAppVisitCount'; // Identificador único para tu aplicación
-            fetch(`https://api.countapi.xyz/hit/miAppVisitCount/visits`)
+
+        // Función para obtener y mostrar el contador de visitas
+        function updateVisitorCount() {
+            const countUrl = 'https://api.countapi.xyz/hit/calcupromediocurn/visits';
+            fetch(countUrl)
                 .then(response => response.json())
                 .then(data => {
-                    const visitCount = data.value;
-                    document.getElementById('visitorCount').textContent = `Visitas totales: ${visitCount}`;
+                    const visitorCountElement = document.getElementById('visitorCount');
+                    visitorCountElement.textContent = `Número de visitas: ${data.value}`;
                 })
                 .catch(error => {
-                    console.error("Error obteniendo el contador de visitas:", error);
-                    document.getElementById('visitorCount').textContent = "Error al cargar el contador de visitas.";
+                    console.error('Error al obtener el contador de visitas:', error);
+                    const visitorCountElement = document.getElementById('visitorCount');
+                    visitorCountElement.textContent = 'No se pudo cargar el contador de visitas';
                 });
         }
-
 
         // Llamar a la función para actualizar el contador de visitas
         updateVisitorCount();
