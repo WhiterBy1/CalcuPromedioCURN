@@ -11,7 +11,13 @@
     margin-top: 20px;
 }
 
-.edit-btn {
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-btn, .delete-btn {
+    width: 80px;
     background-color: #2ecc71;
 }
 
