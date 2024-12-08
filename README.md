@@ -14,7 +14,7 @@ CalcuPromedioCURN es una aplicación web simple y eficiente diseñada para ayuda
 
 ## Cómo usar
 
-1. Abra el archivo `index.html` en su navegador web.
+1. Abra el siguiente link de [CalcuPromedioCURN](https://whiterby1.github.io/CalcuPromedioCURN_/) en su navegador web.
 2. Complete el formulario con la información de cada asignatura:
    - Nombre de la asignatura
    - Número de créditos
