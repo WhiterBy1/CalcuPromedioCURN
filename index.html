@@ -1,58 +1,82 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CalcuPromedioCURN</title>
+    <link rel="stylesheet" href="src/css/styles.css">
     <link rel="stylesheet" href="src/css/index.css">
 </head>
-
 <body>
     <div class="container">
         <h1>CalcuPromedioCURN</h1>
         <form id="gradeForm">
-            <label for="subject">Asignatura:</label>
-            <input type="text" id="subject" required>
-
-            <label for="credits">Créditos:</label>
-            <input type="number" id="credits" required min="1">
-
-            <label for="oep">OEP:</label>
-            <input type="number" id="oep" required min="0" max="5" step="0.1">
-
-            <label for="eep">EEP:</label>
-            <input type="number" id="eep" required min="0" max="5" step="0.1">
-
-            <label for="oes">OES:</label>
-            <input type="number" id="oes" required min="0" max="5" step="0.1">
-
-            <label for="ees">EES:</label>
-            <input type="number" id="ees" required min="0" max="5" step="0.1">
-
-            <label for="oef">OEF:</label>
-            <input type="number" id="oef" required min="0" max="5" step="0.1">
-
-            <label for="eef">EEF:</label>
-            <input type="number" id="eef" required min="0" max="5" step="0.1">
-
-            <button type="submit">Agregar Asignatura</button>
+            <div class="form-group">
+                <label for="subject">Asignatura:</label>
+                <input type="text" id="subject" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="credits">Créditos:</label>
+                <input type="number" id="credits" required min="1" step="1">
+            </div>
+            
+            <div class="grade-inputs">
+                <div class="form-group">
+                    <label for="oep">OEP:</label>
+                    <input type="number" id="oep" required min="0" max="5" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label for="eep">EEP:</label>
+                    <input type="number" id="eep" required min="0" max="5" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label for="oes">OES:</label>
+                    <input type="number" id="oes" required min="0" max="5" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label for="ees">EES:</label>
+                    <input type="number" id="ees" required min="0" max="5" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label for="oef">OEF:</label>
+                    <input type="number" id="oef" required min="0" max="5" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label for="eef">EEF:</label>
+                    <input type="number" id="eef" required min="0" max="5" step="0.01">
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit">Agregar Asignatura</button>
+                <button type="button" id="cancelEdit" class="hidden">Cancelar Edición</button>
+            </div>
         </form>
 
-        <table id="gradeTable">
-            <thead>
-                <tr>
-                    <th>Asignatura</th>
-                    <th>Créditos</th>
-                    <th>Nota Final</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <div class="table-container">
+            <table id="gradeTable">
+                <thead>
+                    <tr>
+                        <th>Asignatura</th>
+                        <th>Créditos</th>
+                        <th>Nota Final</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
 
         <div id="pps"></div>
     </div>
+
+    <script src="/src/js/index.js"></script>
 </body>
-<script type="text/javascript" src="src/js/index.js"></script>
 </html>
+
